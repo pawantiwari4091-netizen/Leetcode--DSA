@@ -1,64 +1,125 @@
 class Solution {
 public:
     string lexGreaterPermutation(string s, string target) {
-        int n = s.length();
+        int n = target.length();
 
+        vector<int> v(26, 0);
 
-        vector<int> cnt(26, 0);
-        for (char c : s) {
-            cnt[c - 'a']++;
+        for (char ch : s) {
+            v[ch - 'a']++;
         }
 
+        string ans;
 
-        string res = string(n, ' ');
+        for (int i = 0; i < n; i++) {
 
+            int curr = target[i] - 'a';
 
-        int i = 0;
-        while (i < n) {
-            char t_char = target[i];
-
-            if (cnt[t_char - 'a'] > 0) {
-                res[i] = t_char;
-                cnt[t_char - 'a']--;
-                i++;
-            } else {
-                break;
+            // Case 1: We can put the same character
+            if (v[curr] > 0) {
+                ans.push_back(target[i]);
+                v[curr]--;
             }
-        }
+            else {
+                // We cannot continue matching target.
+                // Try to find a greater character at current position.
+                int greater = -1;
 
-        int limit = (i == n) ? n - 1 : i;
-        for (int curr = limit; curr >= 0; curr--) {
-            if (res[curr] != ' ') {
-                cnt[res[curr] - 'a']++;
-                res[curr] = ' '; 
-            }
-
-            char target_char = target[curr];
-            int choice = -1;
-            for (int c = (target_char - 'a') + 1; c < 26; c++) {
-                if (cnt[c] > 0) {
-                    choice = c;
-                    break; 
-                }
-            }
-
-            if (choice != -1) {
-                
-                res[curr] = (char)('a' + choice);
-                cnt[choice]--;
-
-                int write_idx = curr + 1;
-                for (int c = 0; c < 26; c++) {
-                    while (cnt[c] > 0) {
-
-                        res[write_idx++] = (char)('a' + c);
-                        cnt[c]--;
+                for (int j = curr + 1; j < 26; j++) {
+                    if (v[j] > 0) {
+                        greater = j;
+                        break;
                     }
                 }
-                return res; 
-            }
 
+                if (greater != -1) {
+                    // Put the greater character
+                    ans.push_back(greater + 'a');
+                    v[greater]--;
+
+                    // Put remaining characters in sorted order
+                    for (int j = 0; j < 26; j++) {
+                        while (v[j] > 0) {
+                            ans.push_back(j + 'a');
+                            v[j]--;
+                        }
+                    }
+
+                    return ans;
+                }
+
+                // No greater character here.
+                // Need to backtrack.
+                for (int k = i - 1; k >= 0; k--) {
+
+                    // Return the character used at position k
+                    v[ans[k] - 'a']++;
+
+                    int prev = target[k] - 'a';
+
+                    // Try to find a character greater than target[k]
+                    greater = -1;
+
+                    for (int j = prev + 1; j < 26; j++) {
+                        if (v[j] > 0) {
+                            greater = j;
+                            break;
+                        }
+                    }
+
+                    if (greater != -1) {
+                        string result = ans.substr(0, k);
+
+                        result.push_back(greater + 'a');
+                        v[greater]--;
+
+                        // Fill remaining characters in sorted order
+                        for (int j = 0; j < 26; j++) {
+                            while (v[j] > 0) {
+                                result.push_back(j + 'a');
+                                v[j]--;
+                            }
+                        }
+
+                        return result;
+                    }
+                }
+
+                // No greater permutation exists
+                return "";
+            }
         }
+
+        // s can form exactly target, but we need GREATER.
+        // Backtrack from the last position.
+        for (int k = n - 1; k >= 0; k--) {
+
+            v[ans[k] - 'a']++;
+
+            int curr = target[k] - 'a';
+
+            for (int j = curr + 1; j < 26; j++) {
+
+                if (v[j] > 0) {
+
+                    string result = ans.substr(0, k);
+
+                    result.push_back(j + 'a');
+                    v[j]--;
+
+                    // Fill remaining characters
+                    for (int x = 0; x < 26; x++) {
+                        while (v[x] > 0) {
+                            result.push_back(x + 'a');
+                            v[x]--;
+                        }
+                    }
+
+                    return result;
+                }
+            }
+        }
+
         return "";
     }
 };
