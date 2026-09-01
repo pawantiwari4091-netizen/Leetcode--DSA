@@ -14,6 +14,7 @@ public:
         int sr = 0, sc = 0;
         int k = 0;
 
+        // Find starting position and assign index to every L
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < m; j++) {
 
@@ -26,70 +27,86 @@ public:
             }
         }
 
+        // No letters to collect
         if (k == 0)
             return 0;
 
         int totalMaxNumber = (1 << k) - 1;
 
         struct state {
-            int r, c, energy, moves, num;
+            int r, c, energy, num;
         };
 
         queue<state> q;
 
         VVVVB seen(n, VVVB(m, VVB(energy + 1, VB(1 << k, false))));
 
-        q.push({sr, sc, energy, 0, 0});
+        q.push({sr, sc, energy, 0});
         seen[sr][sc][energy][0] = true;
 
         int dr[] = {-1, 0, 1, 0};
         int dc[] = {0, 1, 0, -1};
 
+        int moves = 0;
+
         while (!q.empty()) {
 
-            state curr = q.front();
-            q.pop();
+            // Number of states in the current BFS level
+            int size = q.size();
 
-            for (int d = 0; d < 4; d++) {
+            while (size--) {
 
-                int nr = curr.r + dr[d];
-                int nc = curr.c + dc[d];
+                state curr = q.front();
+                q.pop();
 
-                if (nr < 0 || nc < 0 || nr >= n || nc >= m)
-                    continue;
+                for (int d = 0; d < 4; d++) {
 
-                if (classi[nr][nc] == 'X')
-                    continue;
+                    int nr = curr.r + dr[d];
+                    int nc = curr.c + dc[d];
 
-                int ne = curr.energy - 1;
+                    // Out of bounds
+                    if (nr < 0 || nc < 0 || nr >= n || nc >= m)
+                        continue;
 
-                if (ne < 0)
-                    continue;
+                    // Wall
+                    if (classi[nr][nc] == 'X')
+                        continue;
 
-                int nnum = curr.num;
+                    // Moving costs 1 energy
+                    int ne = curr.energy - 1;
 
-                // Recharge
-                if (classi[nr][nc] == 'R') {
-                    ne = energy;
-                }
+                    if (ne < 0)
+                        continue;
 
-                // Collect letter
-                if (classi[nr][nc] == 'L') {
-                    nnum |= (1 << idx[nr][nc]);
-                }
+                    int nnum = curr.num;
 
-                // All letters collected
-                if (nnum == totalMaxNumber) {
-                    return curr.moves + 1;
-                }
+                    // Recharge
+                    if (classi[nr][nc] == 'R') {
+                        ne = energy;
+                    }
 
-                if (!seen[nr][nc][ne][nnum]) {
+                    // Collect letter
+                    if (classi[nr][nc] == 'L') {
+                        nnum |= (1 << idx[nr][nc]);
+                    }
 
-                    seen[nr][nc][ne][nnum] = true;
+                    // All letters collected
+                    if (nnum == totalMaxNumber) {
+                        return moves + 1;
+                    }
 
-                    q.push({nr, nc, ne, curr.moves + 1, nnum});
+                    // New state
+                    if (!seen[nr][nc][ne][nnum]) {
+
+                        seen[nr][nc][ne][nnum] = true;
+
+                        q.push({nr, nc, ne, nnum});
+                    }
                 }
             }
+
+            // Finished processing one BFS level
+            moves++;
         }
 
         return -1;
