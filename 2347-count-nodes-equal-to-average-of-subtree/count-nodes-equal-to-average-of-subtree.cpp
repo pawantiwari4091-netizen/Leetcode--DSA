@@ -24,7 +24,7 @@ public:
         int count = left.first + right.first + 1;
         int sum = left.second + right.second + root->val;
 
-        if(root->val == sum/(count)){
+        if(root->val == sum/count){
             nodeSumequalAvg++;
         }
 
