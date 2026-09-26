@@ -1,14 +1,12 @@
 class Solution {
 public:
-    int minQueenMoves(vector<int>& s, vector<int>& t) {
-
-        int x1 = s[0],y1=s[1];
-        int x2 = t[0],y2=t[1];
-
-        if(s==t) return 0; // same points
-        if(x1==x2 or y1==y2) return 1; // same row or col
-        if(x1 + y1 == x2 + y2) return 1; //  '\' diag
-        if(x1-y1==x2-y2) return 1; // '/' diag
-        return 2; // all other cases
+    int minQueenMoves(vector<int>& source, vector<int>& target) {
+        int sr = source[0], sc = source[1];
+        int tr = target[0], tc = target[1];
+        if(sr == tr && sc == tc) return 0;
+        if(sr == tr) return 1;
+        if(sc == tc) return 1;
+        if(abs(sr - tr) == abs(sc - tc)) return 1;
+        return 2;
     }
 };
