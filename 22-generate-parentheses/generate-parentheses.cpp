@@ -1,0 +1,34 @@
+class Solution {
+public:
+    vector<string> result;
+
+    bool isValid(string str) {
+        int count = 0;
+
+        for(char ch:str) {
+            if(ch == '(')
+                count++;
+            else
+                count--;
+            if(count < 0)
+                return false;
+        }
+        return count==0;
+    }
+
+    void solve(string curr, int n){
+        if(curr.length()==2*n){
+            if(isValid(curr)){
+                result.push_back(curr);
+            }
+            return;
+        }
+        solve(curr+'(', n);
+        solve(curr+')', n);
+    }
+    vector<string> generateParenthesis(int n) {
+        string curr = "";
+        solve(curr, n);
+        return result; 
+    }
+};
