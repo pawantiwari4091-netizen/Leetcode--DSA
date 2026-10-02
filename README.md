@@ -5,12 +5,19 @@ The goal is simple:
 Solve consistently. Understand deeply. Improve every day.
 
 🎯 Goals:
+
 🧠 Strengthen problem-solving and logical thinking
+
 💻 Improve Data Structures & Algorithms skills
+
 📈 Maintain consistent daily coding practice
+
 🎯 Prepare for technical interviews and placements
+
 🔍 Learn multiple approaches to solving problems
+
 ⚡ Improve time and space complexity analysis
+
 📝 Maintain a personal revision resource
 
 🛠️ Language
