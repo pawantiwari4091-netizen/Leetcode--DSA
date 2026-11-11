@@ -1,21 +1,31 @@
 class Solution {
 public:
-    long long minimumCost(int cost1, int cost2, int costBoth, int need1, int need2) {
-        
-        long long comb1 = (long)cost1*need1 + (long)cost2*need2;
+    long long minimumCost(int cost1, int cost2, int costBoth, int need1,
+                          int need2) {
+        long long totalCost = 0;
 
-        long long comb2 = (long)costBoth*max(need1, need2);
+        // Buying separately is cheaper; item 3 is unnecessary
+        if (cost1 + cost2 <= costBoth) {
+            totalCost = 1LL * cost1 * need1 + 1LL * cost2 * need2;
+        } else {
+            // Buy item 3 first until one requirement is fulfilled
+            int cnt_3 = min(need1, need2);
+            totalCost = 1LL * cnt_3 * costBoth;
 
-        long long comb3 = LLONG_MAX;
+            need1 -= cnt_3;
+            need2 -= cnt_3;
 
-        if(need1>need2){
-            comb3 = (long)need2*costBoth + (long)(need1-need2)*cost1;
+            // Type 1 is still needed; choose the cheaper of items 1 and 3
+            if (need1 > 0) {
+                totalCost += 1LL * need1 * min(cost1, costBoth);
+            }
+
+            // Type 2 is still needed; choose the cheaper of items 2 and 3
+            else if (need2 > 0) {
+                totalCost += 1LL * need2 * min(cost2, costBoth);
+            }
         }
-        else{
-            comb3 = (long)need1*costBoth + (long)(need2-need1)*cost2;
-        }
 
-        return min({comb1, comb2, comb3});
-        
+        return totalCost;
     }
 };
